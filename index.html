@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Deeni Practices</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background-color: #f0f4f8; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .tab-active { border-bottom: 4px solid #065f46; color: #065f46; font-weight: bold; }
+        .card { transition: transform 0.2s; border-radius: 12px; }
+        .card:hover { transform: scale(1.02); }
+        pre { white-space: pre-wrap; font-family: inherit; }
+    </style>
+</head>
+<body class="pb-10">
+    <header class="bg-emerald-800 text-white p-8 text-center shadow-md">
+        <h1 class="text-3xl font-bold">Daily Deeni Practices</h1>
+        <p class="mt-2 text-emerald-100">In the Messenger of Allah (ﷺ) you have an excellent example.</p>
+    </header>
+
+    <nav class="bg-white sticky top-0 shadow-sm z-10 overflow-x-auto">
+        <div id="tab-bar" class="flex max-w-5xl mx-auto px-4 whitespace-nowrap"></div>
+    </nav>
+
+    <main class="max-w-5xl mx-auto p-6">
+        <div id="card-container" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
+    </main>
+
+    <script>
+        let currentData = {};
+
+        async function loadApp() {
+            const res = await fetch('data.json');
+            currentData = await res.json();
+            const sheets = Object.keys(currentData);
+            
+            const tabBar = document.getElementById('tab-bar');
+            tabBar.innerHTML = sheets.map((s, i) => `
+                <button onclick="renderSheet('${s}', this)" class="px-6 py-4 text-gray-600 hover:bg-gray-50 ${i===0?'tab-active':''}">
+                    ${s}
+                </button>
+            `).join('');
+
+            renderSheet(sheets[0], tabBar.firstChild.nextSibling);
+        }
+
+        function renderSheet(name, btn) {
+            document.querySelectorAll('#tab-bar button').forEach(b => b.classList.remove('tab-active'));
+            if(btn) btn.classList.add('tab-active');
+
+            const container = document.getElementById('card-container');
+            const rows = currentData[name];
+
+            if(!rows || rows.length === 0 || (!rows[0].Name && !rows[0].Description)) {
+                container.innerHTML = '<p class="col-span-full text-center text-gray-400 py-10">Coming soon... InshaAllah.</p>';
+                return;
+            }
+
+            container.innerHTML = rows.map(r => `
+                <div class="card bg-white p-6 shadow-sm border-l-4 border-emerald-600">
+                    <h2 class="text-xl font-semibold text-emerald-900 mb-2">${r.Name || ""}</h2>
+                    <div class="text-gray-700 leading-relaxed"><pre>${r.Description || ""}</pre></div>
+                </div>
+            `).join('');
+        }
+        loadApp();
+    </script>
+</body>
+</html>
