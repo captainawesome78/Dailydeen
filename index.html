@@ -5,44 +5,118 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Daily Deeni Practices</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        body { background-color: #f0f4f8; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        .tab-active { border-bottom: 4px solid #065f46; color: #065f46; font-weight: bold; }
-        .card { transition: transform 0.2s; border-radius: 12px; }
-        .card:hover { transform: scale(1.02); }
-        pre { white-space: pre-wrap; font-family: inherit; }
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap');
+        
+        :root {
+            --bg-dark: #0f172a;
+            --card-dark: #1e293b;
+            --accent-emerald: #10b981;
+            --accent-gold: #fbbf24;
+        }
+
+        body { 
+            background-color: var(--bg-dark); 
+            color: #f1f5f9;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-image: url("https://www.transparenttextures.com/patterns/cubes.png");
+        }
+
+        .glass {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .tab-active { 
+            background-color: var(--accent-emerald);
+            color: white;
+            box-shadow: 0 4px 14px 0 rgba(16, 185, 129, 0.39);
+        }
+
+        .card-deen {
+            border-top: 4px solid var(--accent-gold);
+            transition: all 0.3s ease;
+        }
+
+        .card-deen:hover {
+            transform: translateY(-5px);
+            border-top-color: var(--accent-emerald);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+        }
+
+        pre { 
+            white-space: pre-wrap; 
+            font-family: inherit; 
+            color: #cbd5e1;
+            line-height: 1.6;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #10b981; }
     </style>
 </head>
-<body class="pb-10">
-    <header class="bg-emerald-800 text-white p-8 text-center shadow-md">
-        <h1 class="text-3xl font-bold">Daily Deeni Practices</h1>
-        <p class="mt-2 text-emerald-100">In the Messenger of Allah (ﷺ) you have an excellent example.</p>
+<body class="min-h-screen">
+
+    <!-- Header Section -->
+    <header class="relative py-12 px-4 text-center overflow-hidden">
+        <div class="relative z-10">
+            <h1 class="text-4xl md:text-5xl font-bold text-white mb-2 tracking-tight">
+                Daily Deeni <span class="text-emerald-400">Practices</span>
+            </h1>
+            <p class="text-amber-200 opacity-80 italic font-light text-lg">
+                “Indeed, in the Messenger of Allah you have an excellent example”
+            </p>
+        </div>
+        <!-- Decorative Islamic Element -->
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 opacity-10 pointer-events-none">
+            <i class="fa-solid fa-mosque text-[200px]"></i>
+        </div>
     </header>
 
-    <nav class="bg-white sticky top-0 shadow-sm z-10 overflow-x-auto">
-        <div id="tab-bar" class="flex max-w-5xl mx-auto px-4 whitespace-nowrap"></div>
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-50 py-4 glass mb-8 shadow-2xl">
+        <div id="tab-bar" class="flex max-w-6xl mx-auto px-4 gap-3 overflow-x-auto no-scrollbar">
+            <!-- Tabs injected here -->
+        </div>
     </nav>
 
-    <main class="max-w-5xl mx-auto p-6">
-        <div id="card-container" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
+    <!-- Main Content -->
+    <main class="max-w-6xl mx-auto px-6 pb-20">
+        <div id="card-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Content injected here -->
+        </div>
     </main>
+
+    <footer class="text-center text-gray-500 py-10 border-t border-slate-800">
+        <p>© 2026 Daily Deeni App • Built for personal growth</p>
+    </footer>
 
     <script>
         let currentData = {};
 
         async function loadApp() {
-            const res = await fetch('data.json');
-            currentData = await res.json();
-            const sheets = Object.keys(currentData);
-            
-            const tabBar = document.getElementById('tab-bar');
-            tabBar.innerHTML = sheets.map((s, i) => `
-                <button onclick="renderSheet('${s}', this)" class="px-6 py-4 text-gray-600 hover:bg-gray-50 ${i===0?'tab-active':''}">
-                    ${s}
-                </button>
-            `).join('');
+            try {
+                const res = await fetch('data.json');
+                currentData = await res.json();
+                const sheets = Object.keys(currentData);
+                
+                const tabBar = document.getElementById('tab-bar');
+                tabBar.innerHTML = sheets.map((s, i) => `
+                    <button onclick="renderSheet('${s}', this)" 
+                            class="px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-200 text-slate-300 hover:bg-slate-800 border border-slate-700 whitespace-nowrap ${i===0?'tab-active':''}">
+                        ${s}
+                    </button>
+                `).join('');
 
-            renderSheet(sheets[0], tabBar.firstChild.nextSibling);
+                renderSheet(sheets[0], tabBar.querySelector('.tab-active'));
+            } catch (e) {
+                console.error("Data load failed:", e);
+            }
         }
 
         function renderSheet(name, btn) {
@@ -50,17 +124,29 @@
             if(btn) btn.classList.add('tab-active');
 
             const container = document.getElementById('card-container');
-            const rows = currentData[name];
+            const rows = currentData[name] || [];
 
-            if(!rows || rows.length === 0 || (!rows[0].Name && !rows[0].Description)) {
-                container.innerHTML = '<p class="col-span-full text-center text-gray-400 py-10">Coming soon... InshaAllah.</p>';
+            if(rows.length === 0 || (!rows[0].Name && !rows[0].Description)) {
+                container.innerHTML = `
+                    <div class="col-span-full py-20 text-center">
+                        <i class="fa-solid fa-moon text-6xl text-slate-700 mb-4"></i>
+                        <p class="text-slate-500 text-lg">Knowledge is coming soon... InshaAllah.</p>
+                    </div>
+                `;
                 return;
             }
 
             container.innerHTML = rows.map(r => `
-                <div class="card bg-white p-6 shadow-sm border-l-4 border-emerald-600">
-                    <h2 class="text-xl font-semibold text-emerald-900 mb-2">${r.Name || ""}</h2>
-                    <div class="text-gray-700 leading-relaxed"><pre>${r.Description || ""}</pre></div>
+                <div class="card-deen glass rounded-2xl p-6 shadow-xl flex flex-col">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="h-8 w-8 rounded-full bg-emerald-500/20 flex items-center justify-center">
+                            <i class="fa-solid fa-star-and-crescent text-emerald-400 text-xs"></i>
+                        </div>
+                        <h2 class="text-xl font-bold text-white leading-tight">${r.Name || "Untitled"}</h2>
+                    </div>
+                    <div class="flex-grow">
+                        <pre>${r.Description || ""}</pre>
+                    </div>
                 </div>
             `).join('');
         }
